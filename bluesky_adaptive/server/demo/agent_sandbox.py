@@ -41,8 +41,8 @@ class TestSequentialAgent(SequentialAgentBase):
             producer_config=broker_authorization_config,
         )
 
-        tiled_data_node = from_profile(tiled_profile)
-        tiled_agent_node = from_profile(tiled_profile)
+        tiled_data_node = from_profile(tiled_profile, prompt_for_reauthentication=False)
+        tiled_agent_node = from_profile(tiled_profile, prompt_for_reauthentication=False)
 
         super().__init__(
             kafka_consumer=kafka_consumer,
