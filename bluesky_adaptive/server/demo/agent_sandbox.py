@@ -59,6 +59,9 @@ class TestSequentialAgent(SequentialAgentBase):
         self._operating_mode = "sleepy"
         self._sleep_duration = 1.5
 
+        # Regular attribute
+        self.test_attr = 123
+
     def measurement_plan(self, point: ArrayLike) -> Tuple[str, list, dict]:
         return self.measurement_plan_name, [self._sleep_duration], dict()
 
@@ -143,8 +146,14 @@ with temporary_topics(topics=["test.publisher", "test.subscriber"]) as (pub_topi
 
     @shutdown_decorator
     def shutdown():
-        return agent.stop()
+        print("Doing nothing.")
+        # return agent.stop()
 
+    register_variable("test_attr", agent, "test_attr")
     register_variable(
-        "operating_mode", None, None, getter=agent.operating_mode_getter, setter=agent.operating_mode_setter
+        "operating_mode",
+        None,
+        None,
+        getter=agent.operating_mode_getter,
+        setter=agent.operating_mode_setter,
     )
