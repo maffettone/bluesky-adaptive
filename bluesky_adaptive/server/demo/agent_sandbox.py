@@ -1,3 +1,8 @@
+# flake8: noqa
+import sys
+
+sys.__stdin__ = sys.stdin
+
 from contextlib import contextmanager
 from typing import Literal, Tuple, Union
 
@@ -10,12 +15,7 @@ from tiled.client import from_profile
 
 from bluesky_adaptive.agents.base import AgentConsumer
 from bluesky_adaptive.agents.simple import SequentialAgentBase
-from bluesky_adaptive.server import (
-    register_variable,
-    shutdown_decorator,
-    start_task,
-    startup_decorator,
-)
+from bluesky_adaptive.server import register_variable, shutdown_decorator, start_task, startup_decorator
 
 
 class TestSequentialAgent(SequentialAgentBase):
@@ -41,8 +41,8 @@ class TestSequentialAgent(SequentialAgentBase):
             producer_config=broker_authorization_config,
         )
 
-        tiled_data_node = from_profile(tiled_profile, prompt_for_reauthentication=False)
-        tiled_agent_node = from_profile(tiled_profile, prompt_for_reauthentication=False)
+        tiled_data_node = from_profile(tiled_profile)
+        tiled_agent_node = from_profile(tiled_profile)
 
         super().__init__(
             kafka_consumer=kafka_consumer,
@@ -141,15 +141,15 @@ with temporary_topics(topics=["test.publisher", "test.subscriber"]) as (pub_topi
 
     @startup_decorator
     def startup():
-        print("Doing nothing")
-        # return agent.start()
+        # print("Doing nothing")
+        return agent.start()
 
     @shutdown_decorator
     def shutdown():
         print("Doing nothing.")
         # return agent.stop()
 
-    register_variable("test_attr", agent, "test_attr", pv_type="int")
+    register_variable("test_attr", agent, "test_attr")
     register_variable(
         "operating_mode",
         None,
