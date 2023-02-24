@@ -70,7 +70,7 @@ class TestSequentialAgent(SequentialAgentBase):
 
     def operating_mode_setter(self, mode: Literal["sleepy", "awake"]):
         def set_function(mode):
-            self.operating_mode = mode
+            self._operating_mode = mode
             self._sleep_duration = {"sleepy": 1.5, "awake": 0.1}[mode]
 
         task_info = start_task(set_function, mode, run_in_background=False)
@@ -149,11 +149,12 @@ with temporary_topics(topics=["test.publisher", "test.subscriber"]) as (pub_topi
         print("Doing nothing.")
         # return agent.stop()
 
-    register_variable("test_attr", agent, "test_attr")
+    register_variable("test_attr", agent, "test_attr", pv_type="int")
     register_variable(
         "operating_mode",
         None,
         None,
         getter=agent.operating_mode_getter,
         setter=agent.operating_mode_setter,
+        pv_type="str",
     )
