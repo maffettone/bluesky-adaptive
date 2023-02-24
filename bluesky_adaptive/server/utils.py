@@ -162,7 +162,7 @@ def register_variable(
         raise TypeError(f"Parameter 'setter' must be callable or None: type(setter)={type(setter)!r}")
     if not isinstance(pv_type, (str, type(None))):
         raise TypeError(f"PV type must be a string: pv_type={pv_type!r}")
-    if not (isinstance(pv_max_length, int) or (pv_max_length is None)):
+    if not isinstance(pv_max_length, (int, type(None))):
         raise TypeError(f"PV max length must be int: pv_max_length={pv_max_length!r}")
 
     WR.agent_server_vars[name] = {
@@ -279,7 +279,7 @@ def load_startup_script(script_path, *, enable_local_imports=True):
         p = os.path.split(script_path)[0]
         sys.path.insert(0, p)  # Needed to make local imports work.
         # Save the list of available modules
-        sm_keys = list(sys.modules.keys())
+        # sm_keys = list(sys.modules.keys())
 
     try:
         nspace = {}
@@ -309,10 +309,10 @@ def load_startup_script(script_path, *, enable_local_imports=True):
             # Delete data on all modules that were loaded by the script.
             # We don't need them anymore. Modules will be reloaded from disk if
             #   the script is executed again.
-            for key in list(sys.modules.keys()):
-                if key not in sm_keys:
-                    # print(f"Deleting the key '{key}'")
-                    del sys.modules[key]
+            # for key in list(sys.modules.keys()):
+            #     if key not in sm_keys:
+            #         # print(f"Deleting the key '{key}'")
+            #         del sys.modules[key]
 
             sys.path.remove(p)
 

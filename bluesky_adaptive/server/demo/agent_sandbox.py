@@ -1,8 +1,4 @@
 # flake8: noqa
-import sys
-
-sys.__stdin__ = sys.stdin
-
 from contextlib import contextmanager
 from typing import Literal, Tuple, Union
 
@@ -128,6 +124,9 @@ def temporary_topics(topics, bootstrap_servers=None, admin_client_config=None):
 
 # Block of borrowed code from tests ###############################################################
 
+import threading
+
+agent_thread = None
 
 with temporary_topics(topics=["test.publisher", "test.subscriber"]) as (pub_topic, sub_topic):
     agent = TestSequentialAgent(
@@ -142,7 +141,11 @@ with temporary_topics(topics=["test.publisher", "test.subscriber"]) as (pub_topi
     @startup_decorator
     def startup():
         # print("Doing nothing")
-        return agent.start()
+
+        # Temporary (or permanent) solution for starting the agent in a thread.
+        # If this is permanent, 'agent' must have a way to exit the loop durng shutdown.
+        agent_thread = threading.Thread(target=agent.start, name="agent-loop", daemon=True)
+        agent_thread.start()
 
     @shutdown_decorator
     def shutdown():
