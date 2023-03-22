@@ -827,9 +827,9 @@ class Agent(ABC):
         self._register_method("generate_report")
         self._register_method("add_suggestions_to_queue")
         self._register_method("tell_agent_by_uid")
-        self._register_property("queue_add_position", pv_type="str")
-        self._register_property("ask_on_tell", pv_type="bool")
-        self._register_property("report_on_tell", pv_type="bool")
+        self._register_property("queue_add_position")
+        self._register_property("ask_on_tell")
+        self._register_property("report_on_tell")
 
     @staticmethod
     def qserver_from_host_and_key(host: str, key: str):
