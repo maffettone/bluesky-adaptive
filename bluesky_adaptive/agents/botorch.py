@@ -169,7 +169,7 @@ class SingleTaskGPAgentBase(Agent, ABC):
                     },
                 )
             ],
-            torch.atleast_1d(candidate).detach().cpu().numpy(),
+            torch.atleast_1d(candidate).detach().cpu().numpy().tolist(),
         )
 
     def remodel_from_report(self, run: BlueskyRun, idx: int = None) -> Tuple[AcquisitionFunction, SingleTaskGP]:
