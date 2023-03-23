@@ -703,7 +703,7 @@ class Agent(ABC):
             logger.debug(
                 f"New data detected, but trigger condition not met. The agent will ignore this start doc: {uid}"
             )
-            return
+            return False
 
         # Tell
         logger.info(f"New data detected, telling the agent about this start doc: {uid}")
@@ -1073,11 +1073,11 @@ class MonarchSubjectAgent(Agent, ABC):
         )
 
     def _on_stop_router(self, name, doc):
-        ret = super()._on_stop_router(name, doc)
+        triggered = super()._on_stop_router(name, doc)
         if name != "stop":
-            return ret
+            return triggered
 
-        if self.subject_ask_condition():
+        if triggered and self.subject_ask_condition():
             if self._direct_to_queue:
                 self.add_suggestions_to_subject_queue(1)
             else:
