@@ -4,7 +4,7 @@ from multiprocessing import Pipe
 
 from fastapi import FastAPI
 
-from .ioc_server import IOC_Server
+# from .ioc_server import IOC_Server
 from .logging_setup import setup_loggers
 from .server_api import router as server_api_router
 from .server_resources import SR
@@ -40,7 +40,7 @@ def build_app():
 
         logger.info("Starting the server ...")
 
-        ioc_prefix = os.environ.get("BS_AGENT_IOC_PREFIX", "agent_ioc")
+        # ioc_prefix = os.environ.get("BS_AGENT_IOC_PREFIX", "agent_ioc")
         startup_script_path = os.environ.get("BS_AGENT_STARTUP_SCRIPT_PATH", None)
         startup_module_name = os.environ.get("BS_AGENT_STARTUP_MODULE_NAME", None)
         worker_shutdown_timeout = os.environ.get("BS_AGENT_WORKER_SHUTDOWN_TIMEOUT", 5)
@@ -57,15 +57,15 @@ def build_app():
         worker_process = WorkerProcess(conn=worker_conn, config=worker_config, log_level=log_level)
         worker_process.start()
 
-        ioc_server = IOC_Server(ioc_prefix=ioc_prefix)
-        await ioc_server.start()
+        # ioc_server = IOC_Server(ioc_prefix=ioc_prefix)
+        # await ioc_server.start()
 
     @app.on_event("shutdown")
     async def shutdown_event():
         global worker_process, ioc_server, worker_shutdown_timeout
         logger.info("Shutting down the server ...")
 
-        ioc_server.stop()
+        # ioc_server.stop()
 
         if worker_process and worker_process.is_alive():
             print("Stopping the worker process ...")
