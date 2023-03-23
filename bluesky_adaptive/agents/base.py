@@ -16,7 +16,7 @@ from bluesky_kafka import Publisher, RemoteDispatcher
 from bluesky_queueserver_api import BPlan
 from bluesky_queueserver_api.api_threads import API_Threads_Mixin
 from databroker.client import BlueskyRun
-from event_model import compose_run
+from event_model import compose_run, sanitize_doc
 from numpy.typing import ArrayLike
 from xkcdpass import xkcd_password as xp
 
@@ -174,17 +174,6 @@ def infer_data_keys(doc: dict) -> DataKeys:
             source="agent",
         )
     return data_keys
-
-
-def make_json_serializable(obj):
-    if isinstance(obj, np.integer):
-        return int(obj)
-    elif isinstance(obj, np.floating):
-        return float(obj)
-    elif isinstance(obj, np.ndarray):
-        return obj.tolist()
-    else:
-        return obj
 
 
 class Agent(ABC):
@@ -562,8 +551,8 @@ class Agent(ABC):
             else:
                 plan_name, args, kwargs = measurement_plan(point)
 
-            args = [make_json_serializable(arg) for arg in args]
-            kwargs = {key: make_json_serializable(val) for key, val in kwargs.items()}
+            args = sanitize_doc(args)
+            kwargs = sanitize_doc(kwargs)
             kwargs.setdefault("md", {})
             kwargs["md"].update(self.default_plan_md)
             kwargs["md"]["agent_ask_uid"] = uid
