@@ -666,6 +666,9 @@ class Agent(ABC):
         uid : str
             Unique key to grab from Tiled.
         """
+        if uid in self.tell_cache:
+            logger.warning(f"{self.instance_name} is already aware of data at document {uid}")
+            return
         run = self.exp_catalog[uid]
         try:
             independent_variable, dependent_variable = self.unpack_run(run)
