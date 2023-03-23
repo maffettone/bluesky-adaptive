@@ -164,14 +164,14 @@ def shutdown_topics():
 
 
 register_variable("test_attr", agent, "test_attr")
-register_variable(
-    "operating_mode",
-    None,
-    None,
-    getter=agent.operating_mode_getter,
-    setter=agent.operating_mode_setter,
-    pv_type="str",
-)
+# register_variable(
+#     "operating_mode",
+#     None,
+#     None,
+#     getter=agent.operating_mode_getter,
+#     setter=agent.operating_mode_setter,
+#     pv_type="str",
+# )
 
 
 def add_suggestions_to_queue(batch_size):
