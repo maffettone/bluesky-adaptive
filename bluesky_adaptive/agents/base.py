@@ -520,7 +520,13 @@ class Agent(ABC):
         return event_doc["uid"]
 
     def _add_to_queue(
-        self, next_points, uid, re_manager=None, position: Optional[Union[int, Literal["front", "back"]]] = None
+        self,
+        next_points,
+        uid,
+        re_manager=None,
+        position: Optional[Union[int, Literal["front", "back"]]] = None,
+        *,
+        measurement_plan: Optional[Callable] = None,
     ):
         """
         Adds a single set of points to the queue as bluesky plans
@@ -540,7 +546,10 @@ class Agent(ABC):
 
         """
         for point in next_points:
-            plan_name, args, kwargs = self.measurement_plan(point)
+            if measurement_plan is None:
+                plan_name, args, kwargs = self.measurement_plan(point)
+            else:
+                plan_name, args, kwargs = measurement_plan(point)
             kwargs.setdefault("md", {})
             kwargs["md"].update(self.default_plan_md)
             kwargs["md"]["agent_ask_uid"] = uid
@@ -1051,7 +1060,13 @@ class MonarchSubjectAgent(Agent, ABC):
         """Calls ask, adds suggestions to queue, and writes out event"""
         next_points, uid = self._ask_and_write_events(batch_size, self.subject_ask, "subject_ask")
         logger.info("Issued ask to subject and adding to the queue. {uid}")
-        self._add_to_queue(next_points, uid, re_manager=self.subject_re_manager, position="front")
+        self._add_to_queue(
+            next_points,
+            uid,
+            re_manager=self.subject_re_manager,
+            position="front",
+            measurement_plan=self.subject_measurement_plan,
+        )
 
     def _on_stop_router(self, name, doc):
         ret = super()._on_stop_router(name, doc)
