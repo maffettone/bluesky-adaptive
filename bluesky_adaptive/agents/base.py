@@ -176,6 +176,17 @@ def infer_data_keys(doc: dict) -> DataKeys:
     return data_keys
 
 
+def make_json_serializable(obj):
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    else:
+        return obj
+
+
 class Agent(ABC):
     """Abstract base class for a single plan agent. These agents should consume data, decide where to measure next,
     and execute a single type of plan (something akin to move and count).
@@ -550,6 +561,9 @@ class Agent(ABC):
                 plan_name, args, kwargs = self.measurement_plan(point)
             else:
                 plan_name, args, kwargs = measurement_plan(point)
+
+            args = [make_json_serializable(arg) for arg in args]
+            kwargs = {key: make_json_serializable(val) for key, val in kwargs.items()}
             kwargs.setdefault("md", {})
             kwargs["md"].update(self.default_plan_md)
             kwargs["md"]["agent_ask_uid"] = uid
