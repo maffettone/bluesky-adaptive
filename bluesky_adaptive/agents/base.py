@@ -775,6 +775,7 @@ class Agent(ABC):
             Reason for closing and restarting the agent, to be recorded to logs, by default ""
         """
         self.stop(reason=f"Close and Restart: {reason}")
+        self.kafka_consumer.closed = False
         if clear_tell_cache:
             self.tell_cache = list()
         elif retell_all:
