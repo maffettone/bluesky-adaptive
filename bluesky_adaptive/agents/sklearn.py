@@ -48,6 +48,11 @@ class SklearnEstimatorAgentBase(Agent, ABC):
         self.model = estimator
 
     def tell(self, x, y):
+        if x in self.independent_cache:
+            raise ValueError(
+                f"{self.instance_name} cannot be told about redundant data."
+                " {x} already in independent variable cache."
+            )
         self.independent_cache.append(x)
         self.observable_cache.append(y)
         return dict(independent_variable=x, observable=y, cache_len=len(self.independent_cache))
