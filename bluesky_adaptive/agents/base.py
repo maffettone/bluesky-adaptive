@@ -694,9 +694,25 @@ class Agent(ABC):
         self.tell_cache.append(uid)
 
     def _on_stop_router(self, name, doc):
-        """Document router that runs each time a stop document is seen."""
+        """Document router that runs each time a stop document is seen.
+        Will trigger the tell method, and optionally the ask/report depending on state of
+        report_on_tell and ask_on_tell.
+
+        Parameters
+        ----------
+        name : str
+            stream name
+        doc : dict
+            document to work from.
+
+        Returns
+        -------
+        bool
+            Returns whether or not the trigger condition is met. I.e. a stop document and any
+            other class specific triggers.
+        """
         if name != "stop":
-            return
+            return False
 
         uid = doc["run_start"]
         if not self.trigger_condition(uid):
@@ -719,6 +735,8 @@ class Agent(ABC):
                 self.add_suggestions_to_queue(1)
             else:
                 self.generate_suggestions_for_adjudicator(1)
+
+        return True
 
     def tell_agent_by_uid(self, uids: Iterable):
         """Give an agent an iterable of uids to learn from.
@@ -1073,6 +1091,23 @@ class MonarchSubjectAgent(Agent, ABC):
         )
 
     def _on_stop_router(self, name, doc):
+        """Document router that runs each time a stop document is seen.
+        Uses the result of the base class trigger to optionally add to the subject queue.
+        This depends on the `subject_ask_condition` and the trigger.
+
+        Parameters
+        ----------
+        name : str
+            stream name
+        doc : dict
+            document to work from.
+
+        Returns
+        -------
+        bool
+            Returns whether or not the trigger condition is met. I.e. a stop document and any
+            other class specific triggers.
+        """
         triggered = super()._on_stop_router(name, doc)
         if name != "stop":
             return triggered
